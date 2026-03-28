@@ -11,6 +11,7 @@ import 'package:we_pei_yang_flutter/commons/util/router_manager.dart';
 import 'package:we_pei_yang_flutter/commons/util/text_util.dart';
 import 'package:we_pei_yang_flutter/commons/util/toast_provider.dart';
 import 'package:we_pei_yang_flutter/schedule/model/course_provider.dart';
+import 'package:we_pei_yang_flutter/private_chat/model/private_chat_provider.dart';
 
 import '../../../commons/local/animation_provider.dart';
 import '../../../commons/themes/wpy_theme.dart';
@@ -24,6 +25,41 @@ class GeneralSettingPage extends StatefulWidget {
 }
 
 class _GeneralSettingPageState extends State<GeneralSettingPage> {
+  bool? _localIsEnable;
+  bool? _localIsAcceptStranger;
+  final _blockController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadPrivateChatSettings();
+    });
+  }
+
+  @override
+  void dispose() {
+    _blockController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _loadPrivateChatSettings() async {
+    final provider = context.read<PrivateChatProvider>();
+    final error = await provider.loadSetting();
+    if (error != null && mounted) {
+      ToastProvider.error(error);
+    }
+    if (mounted) {
+      final setting = provider.userSetting;
+      setState(() {
+        if (setting != null) {
+          _localIsEnable = setting.isEnable == 1;
+          _localIsAcceptStranger = setting.isAcceptStranger == 1;
+        }
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final titleTextStyle = TextUtil.base.bold.sp(14).oldListGroupTitle(context);
@@ -609,6 +645,157 @@ class _GeneralSettingPageState extends State<GeneralSettingPage> {
                       );
                     }),
                   ],
+                ),
+              ),
+              SizedBox(height: 10.h),
+              Container(
+                padding: EdgeInsets.fromLTRB(20.w, 10.h, 15.w, 10.h),
+                decoration: BoxDecoration(
+                  color: WpyTheme.of(context)
+                      .get(WpyColorKey.primaryBackgroundColor),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Consumer<PrivateChatProvider>(
+                  builder: (context, provider, _) {
+                    final setting = provider.userSetting;
+                    if (setting == null) {
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('私信总开关', style: mainTextStyle),
+                                SizedBox(height: 3.h),
+                                Text('加载中...', style: hintTextStyle)
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 15.w),
+                        ],
+                      );
+                    }
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('私信总开关', style: mainTextStyle),
+                              SizedBox(height: 3.h),
+                              Text(
+                                  (_localIsEnable ?? setting.isEnable == 1)
+                                      ? '已开启'
+                                      : '已关闭',
+                                  style: hintTextStyle)
+                            ],
+                          ),
+                        ),
+                        Switch(
+                          value: _localIsEnable ?? setting.isEnable == 1,
+                          onChanged: (val) async {
+                            setState(() {
+                              _localIsEnable = val;
+                            });
+                            final error = await provider.toggleEnable(val);
+                            if (error != null && mounted) {
+                              ToastProvider.error(error);
+                              setState(() {
+                                _localIsEnable = setting.isEnable == 1;
+                              });
+                            }
+                          },
+                          activeColor: WpyTheme.of(context)
+                              .get(WpyColorKey.oldSecondaryActionColor),
+                          inactiveThumbColor: WpyTheme.of(context)
+                              .get(WpyColorKey.oldHintColor),
+                          activeTrackColor: WpyTheme.of(context)
+                              .get(WpyColorKey.oldSwitchBarColor),
+                          inactiveTrackColor: WpyTheme.of(context)
+                              .get(WpyColorKey.oldSwitchBarColor),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+              ),
+              SizedBox(height: 10.h),
+              Container(
+                padding: EdgeInsets.fromLTRB(20.w, 10.h, 15.w, 10.h),
+                decoration: BoxDecoration(
+                  color: WpyTheme.of(context)
+                      .get(WpyColorKey.primaryBackgroundColor),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Consumer<PrivateChatProvider>(
+                  builder: (context, provider, _) {
+                    final setting = provider.userSetting;
+                    if (setting == null) {
+                      return Row(
+                        children: [
+                          Expanded(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('接收陌生人私信', style: mainTextStyle),
+                                SizedBox(height: 3.h),
+                                Text('加载中...', style: hintTextStyle)
+                              ],
+                            ),
+                          ),
+                          SizedBox(width: 15.w),
+                        ],
+                      );
+                    }
+                    return Row(
+                      children: [
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('接收陌生人私信', style: mainTextStyle),
+                              SizedBox(height: 3.h),
+                              Text(
+                                  (_localIsAcceptStranger ??
+                                          setting.isAcceptStranger == 1)
+                                      ? '已开启'
+                                      : '已关闭',
+                                  style: hintTextStyle)
+                            ],
+                          ),
+                        ),
+                        Switch(
+                          value: _localIsAcceptStranger ??
+                              setting.isAcceptStranger == 1,
+                          onChanged: (val) async {
+                            setState(() {
+                              _localIsAcceptStranger = val;
+                            });
+                            final error = await provider.toggleStranger(val);
+                            if (error != null && mounted) {
+                              ToastProvider.error(error);
+                              setState(() {
+                                _localIsAcceptStranger =
+                                    setting.isAcceptStranger == 1;
+                              });
+                            }
+                          },
+                          activeColor: WpyTheme.of(context)
+                              .get(WpyColorKey.oldSecondaryActionColor),
+                          inactiveThumbColor: WpyTheme.of(context)
+                              .get(WpyColorKey.oldHintColor),
+                          activeTrackColor: WpyTheme.of(context)
+                              .get(WpyColorKey.oldSwitchBarColor),
+                          inactiveTrackColor: WpyTheme.of(context)
+                              .get(WpyColorKey.oldSwitchBarColor),
+                        ),
+                      ],
+                    );
+                  },
                 ),
               ),
               SizedBox(height: 15.h),

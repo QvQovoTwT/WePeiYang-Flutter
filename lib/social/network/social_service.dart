@@ -47,11 +47,16 @@ class SocialDio extends DioAbstract {
   /// - 如果有错误，拒绝请求并抛出WpyDioException
   ///
   /// 支持的错误码：
-  /// - 21001: Not Followable
-  /// - 21002: Banned
-  /// - 21003: repeat follow
-  /// - 21004: You are not following this user
-  /// - 21005: The user is not your follower
+  /// - 10201: 由于对方隐私设置无法访问
+  /// - 10202: 该用户被封禁或禁止操作
+  /// - 10203: 你被封禁或禁止该功能
+  /// - 10204: 你关闭了该功能
+  /// - 10205: 你已关注该用户
+  /// - 10206: 关注不存在
+  /// - 10207: 不能对自己操作
+  /// - 10208: 该帖子不存在
+  /// - 10209: 无有效期内封禁记录
+  /// - 10210: 关注记录不存在
   InterceptorsWrapper? get errorInterceptor =>
       InterceptorsWrapper(onRequest: (options, handler) {
         // 在请求头中添加token，用于用户身份验证
@@ -66,20 +71,35 @@ class SocialDio extends DioAbstract {
         // 根据错误码转换为用户友好的错误信息
         if (code != 200) {
           switch (code) {
-            case 21001:
-              error = msg.isNotEmpty ? msg : "Not Followable";
+            case 10201:
+              error = msg.isNotEmpty ? msg : "由于对方隐私设置无法访问";
               break;
-            case 21002:
-              error = msg.isNotEmpty ? msg : "Banned";
+            case 10202:
+              error = msg.isNotEmpty ? msg : "该用户被封禁或禁止操作";
               break;
-            case 21003:
-              error = msg.isNotEmpty ? msg : "repeat follow";
+            case 10203:
+              error = msg.isNotEmpty ? msg : "你被封禁或禁止该功能";
               break;
-            case 21004:
-              error = msg.isNotEmpty ? msg : "You are not following this user";
+            case 10204:
+              error = msg.isNotEmpty ? msg : "你关闭了该功能";
               break;
-            case 21005:
-              error = msg.isNotEmpty ? msg : "The user is not your follower";
+            case 10205:
+              error = msg.isNotEmpty ? msg : "你已关注该用户";
+              break;
+            case 10206:
+              error = msg.isNotEmpty ? msg : "关注不存在";
+              break;
+            case 10207:
+              error = msg.isNotEmpty ? msg : "不能对自己操作";
+              break;
+            case 10208:
+              error = msg.isNotEmpty ? msg : "该帖子不存在";
+              break;
+            case 10209:
+              error = msg.isNotEmpty ? msg : "无有效期内封禁记录";
+              break;
+            case 10210:
+              error = msg.isNotEmpty ? msg : "关注记录不存在";
               break;
             default:
               error = msg.isNotEmpty ? msg : "请求失败";
@@ -553,7 +573,8 @@ class SocialService with AsyncTimer {
     int offset = 0,
   }) async {
     try {
-      var rsp = await socialDio.get("profiles/$uid/public-posts", queryParameters: {
+      var rsp =
+          await socialDio.get("profiles/$uid/public-posts", queryParameters: {
         "page_disable": pageDisable,
         "page": page,
         "page_size": pageSize,

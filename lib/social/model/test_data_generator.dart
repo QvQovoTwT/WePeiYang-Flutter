@@ -26,7 +26,7 @@ class TestDataGenerator {
         department: '计算机科学与技术学院',
         major: '软件工程',
         visible: true,
-        identification: 'gold',
+        identification: VerificationBadge.yellow,
       ),
       SocialUser(
         id: 1002,
@@ -36,7 +36,7 @@ class TestDataGenerator {
         department: '外国语学院',
         major: '英语',
         visible: true,
-        identification: 'blue',
+        identification: VerificationBadge.blue,
       ),
       SocialUser(
         id: 1003,
@@ -46,7 +46,7 @@ class TestDataGenerator {
         department: '电子信息工程学院',
         major: '通信工程',
         visible: true,
-        identification: 'blue',
+        identification: VerificationBadge.blue,
       ),
       SocialUser(
         id: 1004,
@@ -56,7 +56,7 @@ class TestDataGenerator {
         department: '理学院',
         major: '数学与应用数学',
         visible: true,
-        identification: 'blue',
+        identification: VerificationBadge.blue,
       ),
       SocialUser(
         id: 1005,
@@ -66,7 +66,7 @@ class TestDataGenerator {
         department: '材料科学与工程学院',
         major: '材料化学',
         visible: true,
-        identification: 'blue',
+        identification: VerificationBadge.blue,
       ),
     ];
   }

@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:we_pei_yang_flutter/social/view/friend/friend_page.dart';
-import 'package:we_pei_yang_flutter/social/view/message/chat_page.dart';
-import 'package:we_pei_yang_flutter/social/view/message/conversation_list_page.dart';
 import 'package:we_pei_yang_flutter/social/view/profile/profile_page.dart';
 import 'package:we_pei_yang_flutter/social/view/social_page.dart';
-import 'package:we_pei_yang_flutter/social/model/social_models.dart';
 
 /// 社交模块路由配置类
 ///
@@ -12,23 +9,14 @@ import 'package:we_pei_yang_flutter/social/model/social_models.dart';
 /// 用于在应用中导航到不同的社交功能页面。
 ///
 /// 路由路径：
-/// - `social/social`: 社交功能入口页面
+/// - `social/social`: 社交功能入口页面（跳转到新的私信系统）
 /// - `social/friend`: 好友管理页面
-/// - `social/conversation`: 会话列表页面
-/// - `social/chat`: 聊天页面
 /// - `social/profile`: 用户资料页面
 ///
 /// 使用示例：
 /// ```dart
 /// // 导航到社交入口页面
 /// Navigator.pushNamed(context, SocialRouter.social);
-///
-/// // 导航到聊天页面，传递目标用户信息
-/// Navigator.pushNamed(
-///   context,
-///   SocialRouter.chat,
-///   arguments: targetUser,
-/// );
 ///
 /// // 导航到用户资料页面，传递用户ID
 /// Navigator.pushNamed(
@@ -50,36 +38,6 @@ class SocialRouter {
   /// Navigator.pushNamed(context, SocialRouter.friend);
   /// ```
   static String friend = 'social/friend';
-
-  /// 会话列表页面路由路径
-  ///
-  /// 用于查看所有私信会话
-  ///
-  /// 页面：[ConversationListPage]
-  /// 参数：无
-  ///
-  /// 使用示例：
-  /// ```dart
-  /// Navigator.pushNamed(context, SocialRouter.conversation);
-  /// ```
-  static String conversation = 'social/conversation';
-
-  /// 聊天页面路由路径
-  ///
-  /// 用于与指定用户进行私信聊天
-  ///
-  /// 页面：[ChatPage]
-  /// 参数：[SocialUser] - 目标用户信息
-  ///
-  /// 使用示例：
-  /// ```dart
-  /// Navigator.pushNamed(
-  ///   context,
-  ///   SocialRouter.chat,
-  ///   arguments: targetUser,
-  /// );
-  /// ```
-  static String chat = 'social/chat';
 
   /// 用户资料页面路由路径
   ///
@@ -120,8 +78,6 @@ class SocialRouter {
   ///
   /// 路由配置：
   /// - `friend`: 好友管理页面，无参数
-  /// - `conversation`: 会话列表页面，无参数
-  /// - `chat`: 聊天页面，参数类型为[SocialUser]
   /// - `profile`: 用户资料页面，参数类型为[int]
   /// - `social`: 社交入口页面，无参数
   ///
@@ -139,10 +95,6 @@ class SocialRouter {
   static final Map<String, Widget Function(dynamic arguments)> routers = {
     // 好友管理页面
     friend: (_) => FriendPage(),
-    // 会话列表页面
-    conversation: (_) => ConversationListPage(),
-    // 聊天页面，参数为SocialUser类型
-    chat: (args) => ChatPage(args as SocialUser),
     // 用户资料页面，参数为int类型
     profile: (args) => ProfilePage(args as int),
     // 社交入口页面

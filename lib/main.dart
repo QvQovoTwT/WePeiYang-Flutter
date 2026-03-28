@@ -45,6 +45,7 @@ import 'schedule/model/course_provider.dart';
 import 'schedule/model/exam_provider.dart';
 import 'schedule/schedule_providers.dart';
 import 'social/model/social_provider.dart';
+import 'private_chat/model/private_chat_provider.dart';
 
 /// 应用入口
 final _entry = WePeiYangApp();
@@ -343,6 +344,7 @@ class WePeiYangAppState extends State<WePeiYangApp>
        ChangeNotifierProvider(create: (_) => AnimationProvider()),
        ChangeNotifierProvider(create: (_) => xiaotianChatState()),
        ChangeNotifierProvider(create: (_) => SocialProvider()),
+       ChangeNotifierProvider(create: (_) => PrivateChatProvider()),
        ...scheduleProviders,
        ...studyroomProviders,
        ...feedbackProviders,

@@ -208,8 +208,7 @@ class FeedbackHomePageState extends State<FeedbackHomePage>
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Container(width: 0.9.sw, child: _buildSearchBar()),
-                    _buildMessageButton()
+                    Container(width: 1.sw, child: _buildSearchBar()),
                   ],
                 ),
                 SizedBox(height: 16),
@@ -407,8 +406,7 @@ class FeedbackHomePageState extends State<FeedbackHomePage>
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Container(width: 0.9.sw, child: _buildSearchBar()),
-                            _buildMessageButton()
+                            Container(width: 1.sw, child: _buildSearchBar()),
                           ],
                         ),
                         SizedBox(

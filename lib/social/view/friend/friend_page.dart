@@ -5,6 +5,8 @@ import 'package:we_pei_yang_flutter/commons/themes/template/wpy_theme_data.dart'
 import 'package:we_pei_yang_flutter/commons/util/text_util.dart';
 import 'package:we_pei_yang_flutter/commons/util/toast_provider.dart';
 import 'package:we_pei_yang_flutter/commons/widgets/wpy_pic.dart';
+import 'package:we_pei_yang_flutter/private_chat/model/private_chat_model.dart';
+import 'package:we_pei_yang_flutter/private_chat/view/page/private_chat_conversation_page.dart';
 import 'package:we_pei_yang_flutter/social/model/social_models.dart';
 import 'package:we_pei_yang_flutter/social/model/test_data_generator.dart';
 import 'package:we_pei_yang_flutter/social/network/social_service.dart';
@@ -101,7 +103,7 @@ class _FriendPageState extends State<FriendPage>
           controller: _tabController,
           // 两个标签：关注我的、我的粉丝
           tabs: [
-            Tab(text: '关注我的'),
+            Tab(text: '我关注的'),
             Tab(text: '我的粉丝'),
           ],
           // 选中标签样式
@@ -496,17 +498,20 @@ class _FriendItem extends StatelessWidget {
                 margin: EdgeInsets.only(right: 10.w),
                 child: ElevatedButton(
                   onPressed: () {
-                    // 创建一个简化的SocialUser对象用于跳转
-                    final targetUser = SocialUser(
-                      id: user.uid,
-                      nickname: user.nickname,
+                    // 创建 PrivateChatContact 对象用于跳转
+                    final contact = PrivateChatContact(
+                      userId: user.uid,
+                      username: user.nickname,
                       avatar: user.avatarUrl,
                     );
-                    // 导航到聊天页面
-                    Navigator.pushNamed(
+                    // 导航到新的聊天页面
+                    Navigator.push(
                       context,
-                      SocialRouter.chat,
-                      arguments: targetUser,
+                      MaterialPageRoute(
+                        builder: (context) => PrivateChatConversationPage(
+                          contact: contact,
+                        ),
+                      ),
                     );
                   },
                   // 按钮样式

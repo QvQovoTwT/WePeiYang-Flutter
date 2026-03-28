@@ -1,3 +1,245 @@
+/// 个人主页可见性枚举
+///
+/// 控制用户的主页是否允许他人查看。
+enum ProfilePrivacy {
+  /// 关闭（他人无法进入主页）
+  private,
+
+  /// 公开（默认，允许访问）
+  public;
+
+  /// 获取枚举对应的数值
+  int get value {
+    switch (this) {
+      case ProfilePrivacy.private:
+        return 0;
+      case ProfilePrivacy.public:
+        return 1;
+    }
+  }
+
+  /// 从数值创建枚举
+  factory ProfilePrivacy.fromInt(int value) {
+    switch (value) {
+      case 0:
+        return ProfilePrivacy.private;
+      case 1:
+        return ProfilePrivacy.public;
+      default:
+        return ProfilePrivacy.public;
+    }
+  }
+}
+
+/// 私信权限枚举
+///
+/// 控制谁可以发起私信。
+enum MessagePrivacy {
+  /// 关闭（不接收任何私信）
+  close,
+
+  /// 开启（允许所有人私信）
+  all;
+
+  /// 获取枚举对应的数值
+  int get value {
+    switch (this) {
+      case MessagePrivacy.close:
+        return 0;
+      case MessagePrivacy.all:
+        return 1;
+    }
+  }
+
+  /// 从数值创建枚举
+  factory MessagePrivacy.fromInt(int value) {
+    switch (value) {
+      case 0:
+        return MessagePrivacy.close;
+      case 1:
+        return MessagePrivacy.all;
+      default:
+        return MessagePrivacy.all;
+    }
+  }
+}
+
+/// 关注权限枚举
+///
+/// 控制该用户是否允许被他人关注。
+enum FollowPrivacy {
+  /// 不可关注
+  close,
+
+  /// 可关注
+  open;
+
+  /// 获取枚举对应的数值
+  int get value {
+    switch (this) {
+      case FollowPrivacy.close:
+        return 0;
+      case FollowPrivacy.open:
+        return 1;
+    }
+  }
+
+  /// 从数值创建枚举
+  factory FollowPrivacy.fromInt(int value) {
+    switch (value) {
+      case 0:
+        return FollowPrivacy.close;
+      case 1:
+        return FollowPrivacy.open;
+      default:
+        return FollowPrivacy.open;
+    }
+  }
+}
+
+/// 封禁/限制类型枚举
+///
+/// 由管理员触发，影响用户的特定社交功能。
+enum RestrictionType {
+  /// 全功能封禁（禁止关注、私信等所有社交行为）
+  limitAll,
+
+  /// 禁止关注
+  limitFollow,
+
+  /// 禁止私信
+  limitMessage;
+
+  /// 获取枚举对应的数值
+  int get value {
+    switch (this) {
+      case RestrictionType.limitAll:
+        return 0;
+      case RestrictionType.limitFollow:
+        return 1;
+      case RestrictionType.limitMessage:
+        return 2;
+    }
+  }
+
+  /// 从数值创建枚举
+  factory RestrictionType.fromInt(int value) {
+    switch (value) {
+      case 0:
+        return RestrictionType.limitAll;
+      case 1:
+        return RestrictionType.limitFollow;
+      case 2:
+        return RestrictionType.limitMessage;
+      default:
+        return RestrictionType.limitAll;
+    }
+  }
+}
+
+/// 认证图标枚举
+///
+/// 用户的认证类型枚举。
+enum VerificationBadge {
+  /// 没有认证
+  none,
+
+  /// 优质用户（蓝色）
+  blue,
+
+  /// 权威用户（金色）
+  yellow;
+
+  /// 获取枚举对应的数值
+  int get value {
+    switch (this) {
+      case VerificationBadge.none:
+        return 0;
+      case VerificationBadge.blue:
+        return 1;
+      case VerificationBadge.yellow:
+        return 2;
+    }
+  }
+
+  /// 从数值创建枚举
+  factory VerificationBadge.fromInt(int value) {
+    switch (value) {
+      case 0:
+        return VerificationBadge.none;
+      case 1:
+        return VerificationBadge.blue;
+      case 2:
+        return VerificationBadge.yellow;
+      default:
+        return VerificationBadge.none;
+    }
+  }
+}
+
+/// 社交错误码
+///
+/// 定义了社交模块的所有错误码和对应的提示信息。
+class SocialErrorCode {
+  /// 由于对方隐私设置无法访问
+  static const int privacyBlocked = 10201;
+
+  /// 该用户被封禁或禁止操作
+  static const int userBanned = 10202;
+
+  /// 你被封禁或禁止该功能
+  static const int selfBanned = 10203;
+
+  /// 你关闭了该功能
+  static const int selfFeatureDisabled = 10204;
+
+  /// 你已关注该用户
+  static const int alreadyFollowing = 10205;
+
+  /// 关注不存在
+  static const int followNotExists = 10206;
+
+  /// 不能对自己操作
+  static const int cannotOperateSelf = 10207;
+
+  /// 该帖子不存在
+  static const int postNotExists = 10208;
+
+  /// 无有效期内封禁记录
+  static const int noActiveBan = 10209;
+
+  /// 关注记录不存在
+  static const int followRecordNotExists = 10210;
+
+  /// 获取错误码对应的提示信息
+  static String getErrorMessage(int errorCode) {
+    switch (errorCode) {
+      case privacyBlocked:
+        return '由于对方隐私设置无法访问';
+      case userBanned:
+        return '该用户被封禁或禁止操作';
+      case selfBanned:
+        return '你被封禁或禁止该功能';
+      case selfFeatureDisabled:
+        return '你关闭了该功能';
+      case alreadyFollowing:
+        return '你已关注该用户';
+      case followNotExists:
+        return '关注不存在';
+      case cannotOperateSelf:
+        return '不能对自己操作';
+      case postNotExists:
+        return '该帖子不存在';
+      case noActiveBan:
+        return '无有效期内封禁记录';
+      case followRecordNotExists:
+        return '关注记录不存在';
+      default:
+        return '操作失败，请稍后重试';
+    }
+  }
+}
+
 /// 社交用户模型
 ///
 /// 用于表示社交模块中的用户信息，包括用户的基本资料、
@@ -33,10 +275,10 @@ class SocialUser {
   bool visible;
 
   /// 用户认证类型
-  /// null: 未认证
-  /// 'gold': 权威用户认证（金色）
-  /// 'blue': 优质用户认证（蓝色）
-  String? identification;
+  /// VerificationBadge.none: 没有认证 (0)
+  /// VerificationBadge.blue: 优质用户认证 (1)
+  /// VerificationBadge.yellow: 权威用户认证 (2)
+  VerificationBadge identification;
 
   /// 构造函数
   ///
@@ -49,7 +291,7 @@ class SocialUser {
   /// [department] 学院，可选参数
   /// [major] 专业，可选参数
   /// [visible] 主页可见性，默认为true
-  /// [identification] 认证类型，可选参数
+  /// [identification] 认证类型，默认为VerificationBadge.none
   SocialUser({
     this.id = 0,
     this.nickname = '',
@@ -60,7 +302,7 @@ class SocialUser {
     this.department,
     this.major,
     this.visible = true,
-    this.identification,
+    this.identification = VerificationBadge.none,
   });
 
   /// 从JSON数据创建SocialUser实例
@@ -90,7 +332,7 @@ class SocialUser {
         department = json['department'],
         major = json['major'],
         visible = json['visible'] ?? true,
-        identification = json['identification'];
+        identification = VerificationBadge.fromInt(json['identification'] ?? 0);
 
   /// 将SocialUser实例转换为JSON对象
   ///
@@ -117,7 +359,7 @@ class SocialUser {
         'department': department,
         'major': major,
         'visible': visible,
-        'identification': identification,
+        'identification': identification.value,
       };
 }
 

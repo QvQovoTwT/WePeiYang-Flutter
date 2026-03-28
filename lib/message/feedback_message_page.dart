@@ -14,6 +14,8 @@ import 'package:we_pei_yang_flutter/commons/util/toast_provider.dart';
 import 'package:we_pei_yang_flutter/commons/widgets/loading.dart';
 import 'package:we_pei_yang_flutter/commons/widgets/scroll.dart';
 import 'package:we_pei_yang_flutter/commons/widgets/wpy_pic.dart';
+import 'package:we_pei_yang_flutter/commons/themes/wpy_theme.dart';
+import 'package:we_pei_yang_flutter/commons/widgets/w_button.dart';
 import 'package:we_pei_yang_flutter/feedback/feedback_router.dart';
 import 'package:we_pei_yang_flutter/feedback/network/feedback_service.dart';
 import 'package:we_pei_yang_flutter/feedback/network/post.dart';
@@ -22,16 +24,15 @@ import 'package:we_pei_yang_flutter/feedback/view/reply_detail_page.dart';
 import 'package:we_pei_yang_flutter/home/view/web_views/lake_email.dart';
 import 'package:we_pei_yang_flutter/message/model/message_provider.dart';
 import 'package:we_pei_yang_flutter/message/network/message_service.dart';
-
-import '../commons/themes/wpy_theme.dart';
-import '../commons/widgets/w_button.dart';
-import 'model/message_model.dart';
+import 'package:we_pei_yang_flutter/message/model/message_model.dart';
+import 'package:we_pei_yang_flutter/private_chat/model/private_chat_provider.dart';
+import 'package:we_pei_yang_flutter/private_chat/view/widget/private_chat_session_list_widget.dart';
 
 ///枚举MessageType，每个type都是tabView -> list -> item的层次
-enum MessageType { like, floor, reply ,lake}
+enum MessageType { privateChat, floor, reply, like, lake }
 
 extension MessageTypeExtension on MessageType {
-  String get name => ['点赞', '评论', '校务回复', '湖底通知'][this.index];
+  String get name => ['私信', '评论', '校务回复', '点赞', '湖底通知'][this.index];
 
   List<MessageType> get others {
     List<MessageType> result = [];
@@ -75,6 +76,16 @@ class _FeedbackMessagePageState extends State<FeedbackMessagePage>
               currentIndex.value = _tabController.index;
             }
           });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final chatProvider = context.read<PrivateChatProvider>();
+      if (chatProvider.myUserId == null) {
+        chatProvider.init();
+      } else {
+        chatProvider.refreshTotalUnreadCount();
+      }
+    });
+
     //240529考古,表示点赞/评论/校务回复/湖底通知tab
     // 考古,红点type来自此处
     tb = types.map((t) {
@@ -83,12 +94,14 @@ class _FeedbackMessagePageState extends State<FeedbackMessagePage>
 
     wd = types.map((t) {
       switch (t) {
-        case MessageType.like:
-          return LikeMessagesList();
+        case MessageType.privateChat:
+          return PrivateChatSessionListWidget();
         case MessageType.floor:
           return FloorMessagesList();
         case MessageType.reply:
           return ReplyMessagesList();
+        case MessageType.like:
+          return LikeMessagesList();
         case MessageType.lake:
           return LakeEmailPage();
         default:
@@ -111,22 +124,11 @@ class _FeedbackMessagePageState extends State<FeedbackMessagePage>
             preferredSize: Size.fromHeight(100),
             child: AppBar(
               titleSpacing: 0,
-              leadingWidth: 50,
               backgroundColor: Colors.transparent,
               elevation: 0,
               centerTitle: true,
               title: Text('消息中心',
                   style: TextUtil.base.PingFangSC.bold.label(context).sp(18)),
-              leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios_rounded,
-                  color: WpyTheme.of(context).get(WpyColorKey.labelTextColor),
-                  size: 20.w,
-                ),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              ),
               actions: [
                 IconButton(
                     icon: Image.asset(
@@ -234,39 +236,42 @@ class _MessageTabState extends State<MessageTab> {
 
   @override
   Widget build(BuildContext context) {
-      _tabPaddingWidth = MediaQuery.of(context).size.width / 40;
-      Widget tab = ValueListenableBuilder(
-        valueListenable: pageState.currentIndex,
-        builder: (_, int current, __) {
-          return Text(widget.type?.name ?? '');
-        },
-      );
+    _tabPaddingWidth = MediaQuery.of(context).size.width / 40;
+    Widget tab = ValueListenableBuilder(
+      valueListenable: pageState.currentIndex,
+      builder: (_, int current, __) {
+        return Text(widget.type?.name ?? '');
+      },
+    );
 
-      //count 来自于以下
-      //由type 进行调用
-      //type 来自常量map
-      int count = context.select((MessageProvider messageProvider) =>
+    int count;
+    if (widget.type == MessageType.privateChat) {
+      count = context
+          .select((PrivateChatProvider provider) => provider.totalUnreadCount);
+    } else {
+      count = context.select((MessageProvider messageProvider) =>
           messageProvider.getMessageCount(type: widget.type));
-
-      return Tab(
-          child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          // SizedBox(width: _tabPaddingWidth),
-          count == 0
-              ? tab
-              : badges.Badge(
-                  child: tab,
-                  //考古, 红点实现方法!!
-                  //count 来自于上面
-                  badgeContent: Text(
-                    count.toString(),
-                    style: TextUtil.base.reverse(context).sp(8),
-                  )),
-          // SizedBox(width: _tabPaddingWidth),
-        ],
-      ));
     }
+
+    return Tab(
+        child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        // SizedBox(width: _tabPaddingWidth),
+        count == 0
+            ? tab
+            : badges.Badge(
+                child: tab,
+                //考古, 红点实现方法!!
+                //count 来自于上面
+                badgeContent: Text(
+                  count.toString(),
+                  style: TextUtil.base.reverse(context).sp(8),
+                )),
+        // SizedBox(width: _tabPaddingWidth),
+      ],
+    ));
+  }
 }
 
 class LikeMessagesList extends StatefulWidget {

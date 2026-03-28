@@ -16,10 +16,11 @@ import 'package:we_pei_yang_flutter/feedback/view/profile_page.dart';
 import 'package:we_pei_yang_flutter/home/view/wpy_page.dart';
 import 'package:we_pei_yang_flutter/main.dart';
 import 'package:we_pei_yang_flutter/social/model/social_provider.dart';
-import 'package:we_pei_yang_flutter/social/view/message/conversation_list_page.dart';
+import 'package:we_pei_yang_flutter/message/feedback_message_page.dart';
 import 'package:we_pei_yang_flutter/studyroom/model/studyroom_provider.dart';
 import 'package:we_pei_yang_flutter/xiaotian/view/page/xiaotian_page.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:we_pei_yang_flutter/private_chat/model/private_chat_provider.dart';
 
 import '../../auth/view/user/account_upgrade_dialog.dart';
 import '../../commons/themes/wpy_theme.dart';
@@ -48,7 +49,7 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
     pages
       ..add(WPYPage())
       ..add(FeedbackHomePage(key: feedbackKey))
-      ..add(ConversationListPage())
+      ..add(FeedbackMessagePage())
       ..add(AiPage())
       ..add(ProfilePage());
     _tabController = TabController(
@@ -209,9 +210,9 @@ class _HomePageState extends State<HomePage> with TickerProviderStateMixin {
                     ? WpyTheme.of(context).primary
                     : Colors.grey,
               ),
-              Consumer<SocialProvider>(
-                builder: (context, socialProvider, child) {
-                  return socialProvider.hasUnreadMessages
+              Consumer<PrivateChatProvider>(
+                builder: (context, chatProvider, child) {
+                  return chatProvider.hasUnreadMessages
                       ? Positioned(
                           right: -2,
                           top: -2,

@@ -11,9 +11,10 @@ import 'package:we_pei_yang_flutter/commons/util/toast_provider.dart';
 import 'package:we_pei_yang_flutter/commons/widgets/wpy_pic.dart';
 import 'package:we_pei_yang_flutter/feedback/network/feedback_service.dart';
 import 'package:we_pei_yang_flutter/feedback/network/post.dart';
+import 'package:we_pei_yang_flutter/private_chat/model/private_chat_model.dart';
+import 'package:we_pei_yang_flutter/private_chat/view/page/private_chat_conversation_page.dart';
 import 'package:we_pei_yang_flutter/social/model/social_models.dart';
 import 'package:we_pei_yang_flutter/social/network/social_service.dart';
-import 'package:we_pei_yang_flutter/social/social_router.dart';
 
 import '../../commons/themes/wpy_theme.dart';
 import '../../commons/widgets/w_button.dart';
@@ -141,18 +142,20 @@ class _PersonPageState extends State<PersonPage> {
   void _startChat() {
     if (uid == null || nickName == null) return;
 
-    // 创建SocialUser对象
-    final targetUser = SocialUser(
-      id: uid!,
-      nickname: nickName!,
+    // 创建 PrivateChatContact 对象
+    final contact = PrivateChatContact(
+      userId: uid!,
+      username: nickName!,
       avatar: avatar ?? '',
-      level: int.tryParse(level ?? '0') ?? 0,
     );
 
-    Navigator.pushNamed(
+    Navigator.push(
       context,
-      SocialRouter.chat,
-      arguments: targetUser,
+      MaterialPageRoute(
+        builder: (context) => PrivateChatConversationPage(
+          contact: contact,
+        ),
+      ),
     );
   }
 

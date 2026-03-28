@@ -3,8 +3,9 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:we_pei_yang_flutter/commons/themes/template/wpy_theme_data.dart';
 import 'package:we_pei_yang_flutter/commons/util/text_util.dart';
 import 'package:we_pei_yang_flutter/commons/widgets/wpy_pic.dart';
+import 'package:we_pei_yang_flutter/private_chat/model/private_chat_model.dart';
+import 'package:we_pei_yang_flutter/private_chat/view/page/private_chat_conversation_page.dart';
 import 'package:we_pei_yang_flutter/social/model/social_models.dart';
-import 'package:we_pei_yang_flutter/social/social_router.dart';
 import 'package:we_pei_yang_flutter/social/model/test_data_generator.dart';
 
 import '../../commons/themes/wpy_theme.dart';
@@ -115,10 +116,20 @@ class _TestUserItem extends StatelessWidget {
           // 测试按钮
           ElevatedButton(
             onPressed: () {
-              Navigator.pushNamed(
+              // 创建 PrivateChatContact 对象用于跳转
+              final contact = PrivateChatContact(
+                userId: user.id,
+                username: user.nickname,
+                avatar: user.avatar,
+              );
+              // 导航到新的聊天页面
+              Navigator.push(
                 context,
-                SocialRouter.chat,
-                arguments: user,
+                MaterialPageRoute(
+                  builder: (context) => PrivateChatConversationPage(
+                    contact: contact,
+                  ),
+                ),
               );
             },
             style: ElevatedButton.styleFrom(
@@ -131,7 +142,9 @@ class _TestUserItem extends StatelessWidget {
             ),
             child: Text(
               '测试私信',
-              style: TextUtil.base.w600.NotoSansSC.sp(14).copyWith(color: Colors.white),
+              style: TextUtil.base.w600.NotoSansSC
+                  .sp(14)
+                  .copyWith(color: Colors.white),
             ),
           ),
         ],

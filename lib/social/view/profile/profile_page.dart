@@ -7,6 +7,8 @@ import 'package:we_pei_yang_flutter/commons/util/level_util.dart';
 import 'package:we_pei_yang_flutter/commons/util/text_util.dart';
 import 'package:we_pei_yang_flutter/commons/util/toast_provider.dart';
 import 'package:we_pei_yang_flutter/commons/widgets/wpy_pic.dart';
+import 'package:we_pei_yang_flutter/private_chat/model/private_chat_model.dart';
+import 'package:we_pei_yang_flutter/private_chat/view/page/private_chat_conversation_page.dart';
 import 'package:we_pei_yang_flutter/social/model/social_models.dart';
 import 'package:we_pei_yang_flutter/social/model/test_data_generator.dart';
 import 'package:we_pei_yang_flutter/social/network/social_service.dart';
@@ -161,7 +163,7 @@ class _ProfilePageState extends State<ProfilePage> {
           'fans_count': 128,
           'following_count': 64,
           'posts_count': 32,
-          'identification': testUser.identification,
+          'identification': testUser.identification.value,
         };
       } else if (_isOwnProfile) {
         // 自己的主页：使用本地存储的用户信息
@@ -176,7 +178,7 @@ class _ProfilePageState extends State<ProfilePage> {
           'fans_count': 100,
           'following_count': 50,
           'posts_count': 20,
-          'identification': null,
+          'identification': VerificationBadge.blue.value,
         };
       } else {
         // 真实用户：从服务器获取
@@ -209,7 +211,7 @@ class _ProfilePageState extends State<ProfilePage> {
             'fans_count': 128,
             'following_count': 64,
             'posts_count': 32,
-            'identification': testUser.identification,
+            'identification': testUser.identification.value,
           };
         } else {
           fallbackData = {
@@ -223,7 +225,7 @@ class _ProfilePageState extends State<ProfilePage> {
             'fans_count': 100,
             'following_count': 50,
             'posts_count': 20,
-            'identification': null,
+            'identification': VerificationBadge.none.value,
           };
         }
 
@@ -426,10 +428,10 @@ class _ProfilePageState extends State<ProfilePage> {
     final level = _profileData?['level'] ?? 0;
     final department = _profileData?['department'];
     final major = _profileData?['major'];
-    final identification = _profileData?['identification'];
+    final identificationInt = _profileData?['identification'] ?? 0;
 
     // 为测试用户设置认证标识
-    String? finalIdentification;
+    VerificationBadge finalIdentification = VerificationBadge.none;
     if (_isTestUser) {
       final testUsers = TestDataGenerator.generateTestUsers();
       final testUser = testUsers.firstWhere(
@@ -438,14 +440,14 @@ class _ProfilePageState extends State<ProfilePage> {
       );
       finalIdentification = testUser.identification;
     } else {
-      finalIdentification = identification;
+      finalIdentification = VerificationBadge.fromInt(identificationInt);
     }
 
     // 获取认证图标
     String? getIdentificationIcon() {
-      if (finalIdentification == 'gold') {
+      if (finalIdentification == VerificationBadge.yellow) {
         return 'assets/svg_pics/social_icons/identification_gold.svg';
-      } else if (finalIdentification == 'blue') {
+      } else if (finalIdentification == VerificationBadge.blue) {
         return 'assets/svg_pics/social_icons/identification_blue.svg';
       }
       return null;
@@ -613,11 +615,20 @@ class _ProfilePageState extends State<ProfilePage> {
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
-                      // 导航到聊天页面
-                      Navigator.pushNamed(
+                      // 创建 PrivateChatContact 对象用于跳转
+                      final contact = PrivateChatContact(
+                        userId: widget.userId,
+                        username: _profileData!['nickname'] ?? '用户',
+                        avatar: _profileData!['avatar'] ?? '',
+                      );
+                      // 导航到新的聊天页面
+                      Navigator.push(
                         context,
-                        SocialRouter.chat,
-                        arguments: targetUser,
+                        MaterialPageRoute(
+                          builder: (context) => PrivateChatConversationPage(
+                            contact: contact,
+                          ),
+                        ),
                       );
                     },
                     style: ElevatedButton.styleFrom(
